@@ -1,20 +1,36 @@
-import React, { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import React, { useEffect, useState } from 'react'
 import './App.css'
-import { FormControl, TextField, Typography, IconButton } from '@mui/material'
+import {
+  FormControl,
+  Typography,
+  IconButton,
+  Input,
+  TextField,
+} from '@mui/material'
 import Add from '@mui/icons-material/Add'
 import Close from '@mui/icons-material/Close'
 
 function App() {
-  const [open, setOpen] = useState(false)
-  const [close, setClose] = useState(false)
+  const [task, setTask] = useState([{}])
+  const [judul, setJudul] = useState('')
+  const [deskripsi, setDeskripsi] = useState('')
   const [addTask, setAddTask] = useState(false)
+  const [editTask, setEditTask] = useState(false)
 
-  const handleClickOpen = () => {
-    setOpen(true)
+  const handleAddData = () => {
+    setTask([...task, { judul: judul, deskripsi: deskripsi }])
+    setJudul('')
+    setDeskripsi('')
+    setAddTask(!addTask)
   }
-
+  const handleDeleteData = (index) => {
+    const newArray = [...task]
+    newArray.splice(index, 1)
+    setTask(newArray)
+    console.log('Data')
+    console.log(task)
+  }
+  const handleEditData = (index) => {}
   return (
     <>
       <div
@@ -66,75 +82,115 @@ function App() {
             </IconButton>
           </div>
           {addTask ? (
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                gap: 'var(--units-padding-p-16, 16px)',
+                alignAelf: 'stretch',
+              }}
+            >
+              <FormControl style={{ width: '400px', gap: '8px' }}>
+                <label
+                  htmlFor="Judul"
+                  style={{ color: 'black', textAlign: 'left' }}
+                >
+                  Judul
+                </label>
+                <Input
+                  type="text"
+                  variant="outlined"
+                  name="judul"
+                  placeholder="Judul"
+                  value={judul}
+                  onChange={(e) => setJudul(e.target.value)}
+                />
+                <label
+                  htmlFor="Deskripsi"
+                  style={{ color: 'black', textAlign: 'left' }}
+                >
+                  Deskripsi
+                </label>
+                <Input
+                  type="text"
+                  multiline
+                  variant="outlined"
+                  name="deskripsi"
+                  placeholder="Deskripsi"
+                  value={deskripsi}
+                  onChange={(e) => setDeskripsi(e.target.value)}
+                />
+              </FormControl>
+              <button
+                style={{ color: 'white', backgroundColor: 'blue' }}
+                onClick={() => {
+                  handleAddData()
+                }}
+              >
+                Add
+              </button>
+            </div>
+          ) : null}
+          {task.map((item, index) => (
             <>
               <div
                 style={{
                   display: 'flex',
-                  height: '74.408px',
-                  flexDirection: 'column',
                   alignItems: 'flex-start',
-                  gap: '8px',
-                  flex: '1 0 0',
+                  justifyContent: 'space-between',
+                  gap: 'var(--units-padding-p-16, 16px)',
+                  alignSelf: 'stretch',
                 }}
               >
-                <FormControl style={{ width: '500px', gap: '8px' }}>
-                  <label
-                    htmlFor="NIP Baru"
-                    style={{ color: 'black', textAlign: 'left' }}
-                  >
-                    Judul
-                  </label>
-                  <TextField
-                    type="text"
-                    variant="outlined"
-                    name="Judul"
-                    placeholder="Judul"
-                    defaultValue=""
-                    inputProps={{
-                      style: {
-                        backgroundColor: '#F7F7F7',
-                        color: 'black',
-                        height: '12px',
-                      },
+                <div
+                  style={{
+                    display: 'flex',
+                    width: '540.5px',
+                    flexDirection: 'column',
+                    alignItems: 'flex-start',
+                    gap: '8px',
+                  }}
+                >
+                  <Typography
+                    style={{
+                      color: '#272833',
+                      fontFamily: 'Inter',
+                      fontSize: '20px',
+                      fontStyle: 'normal',
+                      fontWeight: '600',
+                      lineHeight: '125%' /* 25px */,
                     }}
-                  />
-                </FormControl>
-              </div>
-              <div
-                style={{
-                  display: 'flex',
-                  height: '74.408px',
-                  flexDirection: 'column',
-                  alignItems: 'flex-start',
-                  gap: '8px',
-                  flex: '1 0 0',
-                }}
-              >
-                <FormControl style={{ width: '500px', gap: '8px' }}>
-                  <label
-                    htmlFor="NIP Baru"
-                    style={{ color: 'black', textAlign: 'left' }}
                   >
-                    Deskripsi
-                  </label>
-                  <TextField
-                    type="paragraph"
-                    variant="outlined"
-                    name="Deskripsi"
-                    placeholder="Deskripsi"
-                    defaultValue=""
-                    inputProps={{
-                      style: {
-                        backgroundColor: '#F7F7F7',
-                        color: 'black',
-                        height: '12px',
-                      },
+                    {item.judul}
+                  </Typography>
+                  <Typography
+                    style={{
+                      color: '#272833',
+                      fontFamily: 'Inter',
+                      fontSize: '16px',
+                      fontStyle: 'normal',
+                      fontWeight: '400',
+                      lineHeight: '125%' /* 25px */,
+                      overflowWrap: 'wrap',
                     }}
-                  />
-                </FormControl>
+                  >
+                    {item.deskripsi}
+                  </Typography>
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'flex-end',
+                    gap: '5px',
+                  }}
+                >
+                  <button onClick={() => handleEditData(index)}>Edit</button>
+                  <button onClick={() => handleDeleteData(index)}>Done</button>
+                </div>
               </div>
             </>
-          ) : null}
+          ))}
         </div>
       </div>
     </>
