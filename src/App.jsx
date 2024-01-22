@@ -1,21 +1,17 @@
 import React, { useEffect, useState } from 'react'
 import './App.css'
-import {
-  FormControl,
-  Typography,
-  IconButton,
-  Input,
-  TextField,
-} from '@mui/material'
+import { FormControl, Typography, IconButton, Input } from '@mui/material'
 import Add from '@mui/icons-material/Add'
 import Close from '@mui/icons-material/Close'
 
 function App() {
-  const [task, setTask] = useState([{}])
+  const [idData, setIdData] = useState('')
+  const [task, setTask] = useState([])
   const [judul, setJudul] = useState('')
   const [deskripsi, setDeskripsi] = useState('')
   const [addTask, setAddTask] = useState(false)
   const [editTask, setEditTask] = useState(false)
+  const [showList, setShowList] = useState(true)
 
   const handleAddData = () => {
     setTask([...task, { judul: judul, deskripsi: deskripsi }])
@@ -27,10 +23,12 @@ function App() {
     const newArray = [...task]
     newArray.splice(index, 1)
     setTask(newArray)
-    console.log('Data')
-    console.log(task)
+    alert('Task Delete Successfully')
   }
-  const handleEditData = (index) => {}
+  const handleEditData = (id) => {
+    setJudul(task[idData * 1].judul)
+    setDeskripsi(task[idData * 1].deskripsi)
+  }
   return (
     <>
       <div
@@ -113,7 +111,7 @@ function App() {
                   Deskripsi
                 </label>
                 <Input
-                  type="text"
+                  type="paragraph"
                   multiline
                   variant="outlined"
                   name="deskripsi"
@@ -132,65 +130,125 @@ function App() {
               </button>
             </div>
           ) : null}
-          {task.map((item, index) => (
-            <>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  justifyContent: 'space-between',
-                  gap: 'var(--units-padding-p-16, 16px)',
-                  alignSelf: 'stretch',
-                }}
+          {editTask ? (
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                gap: 'var(--units-padding-p-16, 16px)',
+                alignAelf: 'stretch',
+              }}
+            >
+              <FormControl style={{ width: '400px', gap: '8px' }}>
+                <label
+                  htmlFor="Judul"
+                  style={{ color: 'black', textAlign: 'left' }}
+                >
+                  Judul
+                </label>
+                <Input
+                  type="text"
+                  variant="outlined"
+                  name="judul"
+                  placeholder="judul"
+                  value={judul}
+                  onChange={(e) => setJudul(e.target.value)}
+                />
+                <label
+                  htmlFor="Deskripsi"
+                  style={{ color: 'black', textAlign: 'left' }}
+                >
+                  Deskripsi
+                </label>
+                <Input
+                  type="text"
+                  multiline
+                  variant="outlined"
+                  name="deskripsi"
+                  placeholder="deskripsi"
+                  value={deskripsi}
+                  onChange={(e) => setDeskripsi(e.target.value)}
+                />
+              </FormControl>
+              <button
+                style={{ color: 'white', backgroundColor: 'blue' }}
+                onClick={() => handleEditData(idData)}
               >
+                Edit
+              </button>
+            </div>
+          ) : null}
+          {showList &&
+            task.length > 0 &&
+            task.map((item, index) => (
+              <>
                 <div
                   style={{
                     display: 'flex',
-                    width: '540.5px',
-                    flexDirection: 'column',
                     alignItems: 'flex-start',
-                    gap: '8px',
+                    justifyContent: 'space-between',
+                    gap: 'var(--units-padding-p-16, 16px)',
+                    alignSelf: 'stretch',
                   }}
                 >
-                  <Typography
+                  <div
                     style={{
-                      color: '#272833',
-                      fontFamily: 'Inter',
-                      fontSize: '20px',
-                      fontStyle: 'normal',
-                      fontWeight: '600',
-                      lineHeight: '125%' /* 25px */,
+                      display: 'flex',
+                      width: '540.5px',
+                      flexDirection: 'column',
+                      alignItems: 'flex-start',
+                      gap: '8px',
                     }}
                   >
-                    {item.judul}
-                  </Typography>
-                  <Typography
+                    <Typography
+                      style={{
+                        color: '#272833',
+                        fontFamily: 'Inter',
+                        fontSize: '20px',
+                        fontStyle: 'normal',
+                        fontWeight: '600',
+                        lineHeight: '125%' /* 25px */,
+                      }}
+                    >
+                      {item.judul}
+                    </Typography>
+                    <Typography
+                      style={{
+                        color: '#272833',
+                        fontFamily: 'Inter',
+                        fontSize: '17px',
+                        fontStyle: 'normal',
+                        fontWeight: '400',
+                        lineHeight: '125%' /* 25px */,
+                        overflowWrap: 'wrap',
+                      }}
+                    >
+                      {item.deskripsi}
+                    </Typography>
+                  </div>
+                  <div
                     style={{
-                      color: '#272833',
-                      fontFamily: 'Inter',
-                      fontSize: '16px',
-                      fontStyle: 'normal',
-                      fontWeight: '400',
-                      lineHeight: '125%' /* 25px */,
-                      overflowWrap: 'wrap',
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: '5px',
                     }}
                   >
-                    {item.deskripsi}
-                  </Typography>
+                    <button
+                      onClick={() => {
+                        setIdData(index)
+                        setEditTask(!editTask)
+                      }}
+                    >
+                      Edit
+                    </button>
+                    <button onClick={() => handleDeleteData(index)}>
+                      Done
+                    </button>
+                  </div>
                 </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'flex-end',
-                    gap: '5px',
-                  }}
-                >
-                  <button onClick={() => handleEditData(index)}>Edit</button>
-                  <button onClick={() => handleDeleteData(index)}>Done</button>
-                </div>
-              </div>
-            </>
-          ))}
+              </>
+            ))}
         </div>
       </div>
     </>
