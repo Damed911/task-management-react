@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import './App.css'
 import { FormControl, Typography, IconButton, Input } from '@mui/material'
 import Add from '@mui/icons-material/Add'
@@ -12,6 +12,7 @@ function App() {
   const [addTask, setAddTask] = useState(false)
   const [editTask, setEditTask] = useState(false)
   const [showList, setShowList] = useState(true)
+  const [showAdd, setShowAdd] = useState(true)
 
   const handleAddData = () => {
     setTask([...task, { judul: judul, deskripsi: deskripsi }])
@@ -25,9 +26,39 @@ function App() {
     setTask(newArray)
     alert('Task Delete Successfully')
   }
+  const editData = () => {
+    setTask(
+      task.map((item, index) => {
+        if (index === idData) {
+          return { ...item, judul: judul, deskripsi: deskripsi }
+        }
+        return item
+      })
+    )
+
+    console.log(task)
+    setShowAdd(!showAdd)
+    setShowList(!showList)
+    setEditTask(!editTask)
+    setJudul('')
+    setDeskripsi('')
+    setIdData(null)
+  }
   const handleEditData = (id) => {
-    setJudul(task[idData * 1].judul)
-    setDeskripsi(task[idData * 1].deskripsi)
+    setShowAdd(!showAdd)
+    setShowList(!showList)
+    setEditTask(!editTask)
+    setIdData(id)
+
+    console.log(idData)
+
+    let editedTask = task.find((elem, index) => {
+      return index === id
+    })
+
+    console.log(editedTask)
+    setDeskripsi(editedTask.deskripsi)
+    setJudul(editedTask.judul)
   }
   return (
     <>
@@ -55,30 +86,32 @@ function App() {
             flex: '1 0 0',
           }}
         >
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              alignSelf: 'stretch',
-            }}
-          >
-            <Typography
+          {showAdd ? (
+            <div
               style={{
-                color: '#272833',
-                fontFamily: 'Inter',
-                fontSize: '20px',
-                fontStyle: 'normal',
-                fontWeight: '700',
-                lineHeight: '125%' /* 25px */,
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                alignSelf: 'stretch',
               }}
             >
-              List Task
-            </Typography>
-            <IconButton onClick={() => setAddTask(!addTask)}>
-              {addTask ? <Close /> : <Add />}
-            </IconButton>
-          </div>
+              <Typography
+                style={{
+                  color: '#272833',
+                  fontFamily: 'Inter',
+                  fontSize: '20px',
+                  fontStyle: 'normal',
+                  fontWeight: '700',
+                  lineHeight: '125%' /* 25px */,
+                }}
+              >
+                List Task
+              </Typography>
+              <IconButton onClick={() => setAddTask(!addTask)}>
+                {addTask ? <Close /> : <Add />}
+              </IconButton>
+            </div>
+          ) : null}
           {addTask ? (
             <div
               style={{
@@ -123,7 +156,10 @@ function App() {
               <button
                 style={{ color: 'white', backgroundColor: 'blue' }}
                 onClick={() => {
-                  handleAddData()
+                  if (judul !== '' || deskripsi !== '') {
+                    handleAddData()
+                  } else if (judul === '' || deskripsi === '')
+                    alert('Data perlu diisi')
                 }}
               >
                 Add
@@ -171,18 +207,37 @@ function App() {
                   onChange={(e) => setDeskripsi(e.target.value)}
                 />
               </FormControl>
-              <button
-                style={{ color: 'white', backgroundColor: 'blue' }}
-                onClick={() => handleEditData(idData)}
-              >
-                Edit
-              </button>
+              <div style={{ flexDirection: 'row', gap: '16px' }}>
+                <button
+                  style={{ color: 'white', backgroundColor: 'blue' }}
+                  onClick={() => {
+                    if (judul !== '' || deskripsi !== '') {
+                      editData()
+                    }
+                    alert('Data perlu diisi')
+                  }}
+                >
+                  Edit
+                </button>
+                <button
+                  style={{ color: 'white', backgroundColor: 'red' }}
+                  onClick={() => {
+                    setShowAdd(!showAdd)
+                    setShowList(!showList)
+                    setEditTask(!editTask)
+                    setJudul('')
+                    setDeskripsi('')
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           ) : null}
           {showList &&
             task.length > 0 &&
-            task.map((item, index) => (
-              <>
+            task.map((item, index) => {
+              return (
                 <div
                   style={{
                     display: 'flex',
@@ -236,8 +291,7 @@ function App() {
                   >
                     <button
                       onClick={() => {
-                        setIdData(index)
-                        setEditTask(!editTask)
+                        handleEditData(index)
                       }}
                     >
                       Edit
@@ -247,8 +301,8 @@ function App() {
                     </button>
                   </div>
                 </div>
-              </>
-            ))}
+              )
+            })}
         </div>
       </div>
     </>
