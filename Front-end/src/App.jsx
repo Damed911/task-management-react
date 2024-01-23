@@ -207,14 +207,16 @@ function App() {
                   onChange={(e) => setDeskripsi(e.target.value)}
                 />
               </FormControl>
-              <div style={{ flexDirection: 'row', gap: '16px' }}>
+              <div
+                style={{ display: 'flex', flexDirection: 'row', gap: '10px' }}
+              >
                 <button
                   style={{ color: 'white', backgroundColor: 'blue' }}
                   onClick={() => {
                     if (judul !== '' || deskripsi !== '') {
                       editData()
-                    }
-                    alert('Data perlu diisi')
+                    } else if (judul === '' || deskripsi === '')
+                      alert('Data perlu diisi')
                   }}
                 >
                   Edit
