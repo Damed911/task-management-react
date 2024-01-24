@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './App.css'
 import { FormControl, Typography, IconButton, Input } from '@mui/material'
 import Add from '@mui/icons-material/Add'
@@ -8,42 +8,82 @@ function App() {
   const [idData, setIdData] = useState('')
   const [task, setTask] = useState([])
   const [judul, setJudul] = useState('')
-  const [deskripsi, setDeskripsi] = useState('')
+  const [description, setDescription] = useState('')
   const [addTask, setAddTask] = useState(false)
   const [editTask, setEditTask] = useState(false)
   const [showList, setShowList] = useState(true)
   const [showAdd, setShowAdd] = useState(true)
 
-  const handleAddData = () => {
-    setTask([...task, { judul: judul, deskripsi: deskripsi }])
+  const handleAddData = async () => {
+    // setTask([...task, { judul: judul, description: description }])
+    try {
+      const body = { judul, description }
+      const response = await fetch('http://localhost:3000/todos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+
+      console.log(response)
+    } catch (err) {
+      console.error(err.message)
+    }
     setJudul('')
-    setDeskripsi('')
+    setDescription('')
     setAddTask(!addTask)
   }
-  const handleDeleteData = (index) => {
-    const newArray = [...task]
-    newArray.splice(index, 1)
-    setTask(newArray)
+
+  const getTask = async () => {
+    try {
+      const response = await fetch('http://localhost:3000')
+      const jsonData = await response.json()
+
+      setTask(jsonData)
+    } catch (err) {
+      console.error(err.message)
+    }
+  }
+
+  const handleDeleteData = async (id) => {
+    // const newArray = [...task]
+    // newArray.splice(index, 1)
+    // setTask(newArray)
+
+    try {
+      const response = await fetch(`http://localhost:3000/todos/delete/${id}`, {
+        method: 'DELETE',
+      })
+    } catch (err) {
+      console.error(err.message)
+    }
+
+    setTask(task.filter((tasks) => tasks.task_id !== id))
     alert('Task Delete Successfully')
   }
-  const editData = () => {
-    setTask(
-      task.map((item, index) => {
-        if (index === idData) {
-          return { ...item, judul: judul, deskripsi: deskripsi }
-        }
-        return item
-      })
-    )
 
-    console.log(task)
+  const editData = async () => {
+    // setTask(
+    //   task.map((item, index) => {
+    //     if (index === idData) {
+    //       return { ...item, judul: judul, description: description }
+    //     }
+    //     return item
+    //   })
+    // )
+    const body = { judul, description }
+    const response = await fetch(`http://localhost:3000/todos/edit/${idData}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
     setShowAdd(!showAdd)
     setShowList(!showList)
     setEditTask(!editTask)
     setJudul('')
-    setDeskripsi('')
+    setDescription('')
     setIdData(null)
   }
+
   const handleEditData = (id) => {
     setShowAdd(!showAdd)
     setShowList(!showList)
@@ -52,14 +92,19 @@ function App() {
 
     console.log(idData)
 
-    let editedTask = task.find((elem, index) => {
-      return index === id
+    let editedTask = task.find((elem) => {
+      return elem.task_id === id
     })
 
     console.log(editedTask)
-    setDeskripsi(editedTask.deskripsi)
+    setDescription(editedTask.description)
     setJudul(editedTask.judul)
   }
+
+  useEffect(() => {
+    getTask()
+  }, [])
+
   return (
     <>
       <div
@@ -138,28 +183,27 @@ function App() {
                   onChange={(e) => setJudul(e.target.value)}
                 />
                 <label
-                  htmlFor="Deskripsi"
+                  htmlFor="description"
                   style={{ color: 'black', textAlign: 'left' }}
                 >
-                  Deskripsi
+                  description
                 </label>
                 <Input
                   type="paragraph"
                   multiline
                   variant="outlined"
-                  name="deskripsi"
-                  placeholder="Deskripsi"
-                  value={deskripsi}
-                  onChange={(e) => setDeskripsi(e.target.value)}
+                  name="description"
+                  placeholder="description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
                 />
               </FormControl>
               <button
                 style={{ color: 'white', backgroundColor: 'blue' }}
                 onClick={() => {
-                  if (judul !== '' || deskripsi !== '') {
+                  if (judul !== '' || description !== '') {
                     handleAddData()
-                  } else if (judul === '' || deskripsi === '')
-                    alert('Data perlu diisi')
+                  }
                 }}
               >
                 Add
@@ -192,19 +236,19 @@ function App() {
                   onChange={(e) => setJudul(e.target.value)}
                 />
                 <label
-                  htmlFor="Deskripsi"
+                  htmlFor="description"
                   style={{ color: 'black', textAlign: 'left' }}
                 >
-                  Deskripsi
+                  description
                 </label>
                 <Input
                   type="text"
                   multiline
                   variant="outlined"
-                  name="deskripsi"
-                  placeholder="deskripsi"
-                  value={deskripsi}
-                  onChange={(e) => setDeskripsi(e.target.value)}
+                  name="description"
+                  placeholder="description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
                 />
               </FormControl>
               <div
@@ -213,9 +257,9 @@ function App() {
                 <button
                   style={{ color: 'white', backgroundColor: 'blue' }}
                   onClick={() => {
-                    if (judul !== '' || deskripsi !== '') {
+                    if (judul !== '' || description !== '') {
                       editData()
-                    } else if (judul === '' || deskripsi === '')
+                    } else if (judul === '' || description === '')
                       alert('Data perlu diisi')
                   }}
                 >
@@ -228,7 +272,7 @@ function App() {
                     setShowList(!showList)
                     setEditTask(!editTask)
                     setJudul('')
-                    setDeskripsi('')
+                    setDescription('')
                   }}
                 >
                   Cancel
@@ -238,7 +282,7 @@ function App() {
           ) : null}
           {showList &&
             task.length > 0 &&
-            task.map((item, index) => {
+            task.map((item) => {
               return (
                 <div
                   style={{
@@ -281,7 +325,7 @@ function App() {
                         overflowWrap: 'wrap',
                       }}
                     >
-                      {item.deskripsi}
+                      {item.description}
                     </Typography>
                   </div>
                   <div
@@ -293,12 +337,16 @@ function App() {
                   >
                     <button
                       onClick={() => {
-                        handleEditData(index)
+                        handleEditData(item.task_id)
                       }}
+                      style={{ color: 'white', backgroundColor: 'orange' }}
                     >
                       Edit
                     </button>
-                    <button onClick={() => handleDeleteData(index)}>
+                    <button
+                      onClick={() => handleDeleteData(item.task_id)}
+                      style={{ color: 'white', backgroundColor: 'red' }}
+                    >
                       Done
                     </button>
                   </div>
