@@ -4,6 +4,28 @@ import { FormControl, Typography, IconButton, Input } from '@mui/material'
 import Add from '@mui/icons-material/Add'
 import Close from '@mui/icons-material/Close'
 
+const card = {
+  display: 'flex',
+  width: '994px',
+  padding: '24px',
+  alignItems: 'flex-start',
+  alignContent: 'flex-start',
+  gap: '15px',
+  flexWrap: 'wrap',
+  borderRadius: '15px',
+  background: '#FFF',
+  boxShadow: '4px 4px 12px 0px rgba(166, 166, 166, 0.12)',
+}
+
+const container = {
+  width: '946px',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
+  gap: '8px',
+  flex: '1 0 0',
+}
+
 function App() {
   const [idData, setIdData] = useState('')
   const [task, setTask] = useState([])
@@ -25,6 +47,7 @@ function App() {
       })
 
       console.log(response)
+      window.location = '/'
     } catch (err) {
       console.error(err.message)
     }
@@ -70,12 +93,22 @@ function App() {
     //     return item
     //   })
     // )
-    const body = { judul, description }
-    const response = await fetch(`http://localhost:3000/todos/edit/${idData}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    })
+    try {
+      const body = { judul, description }
+      const response = await fetch(
+        `http://localhost:3000/todos/edit/${idData}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        }
+      )
+
+      window.location = '/'
+    } catch (err) {
+      console.error(err.message)
+    }
+
     setShowAdd(!showAdd)
     setShowList(!showList)
     setEditTask(!editTask)
