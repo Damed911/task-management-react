@@ -60,6 +60,7 @@ const EditTask = ({ item }) => {
                 alignAelf: 'stretch',
               }}
             >
+              <h2 style={{ color: 'black' }}>Edit Task</h2>
               <FormControl style={{ width: '400px' }}>
                 <label
                   htmlFor="Judul"
